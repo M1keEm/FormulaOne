@@ -6,6 +6,23 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		276727D22DE8D7E80041D008 /* QuizAnswer+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CB2DE8D7E80041D008 /* QuizAnswer+CoreDataProperties.swift */; };
+		276727D32DE8D7E80041D008 /* QuizQuestion+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CD2DE8D7E80041D008 /* QuizQuestion+CoreDataProperties.swift */; };
+		276727D42DE8D7E80041D008 /* Quiz+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C82DE8D7E80041D008 /* Quiz+CoreDataClass.swift */; };
+		276727D52DE8D7E80041D008 /* Team+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727D12DE8D7E80041D008 /* Team+CoreDataProperties.swift */; };
+		276727D62DE8D7E80041D008 /* Quiz+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C92DE8D7E80041D008 /* Quiz+CoreDataProperties.swift */; };
+		276727D72DE8D7E80041D008 /* QuizQuestion+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CC2DE8D7E80041D008 /* QuizQuestion+CoreDataClass.swift */; };
+		276727D82DE8D7E80041D008 /* Car+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C42DE8D7E80041D008 /* Car+CoreDataClass.swift */; };
+		276727D92DE8D7E80041D008 /* QuizResult+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CF2DE8D7E80041D008 /* QuizResult+CoreDataProperties.swift */; };
+		276727DA2DE8D7E80041D008 /* QuizResult+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CE2DE8D7E80041D008 /* QuizResult+CoreDataClass.swift */; };
+		276727DB2DE8D7E80041D008 /* Car+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C52DE8D7E80041D008 /* Car+CoreDataProperties.swift */; };
+		276727DC2DE8D7E80041D008 /* QuizAnswer+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727CA2DE8D7E80041D008 /* QuizAnswer+CoreDataClass.swift */; };
+		276727DD2DE8D7E80041D008 /* Driver+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C72DE8D7E80041D008 /* Driver+CoreDataProperties.swift */; };
+		276727DE2DE8D7E80041D008 /* Driver+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727C62DE8D7E80041D008 /* Driver+CoreDataClass.swift */; };
+		276727DF2DE8D7E80041D008 /* Team+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276727D02DE8D7E80041D008 /* Team+CoreDataClass.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		27D525B22DE4FA7400B73677 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +41,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		276727C42DE8D7E80041D008 /* Car+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Car+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727C52DE8D7E80041D008 /* Car+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Car+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727C62DE8D7E80041D008 /* Driver+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Driver+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727C72DE8D7E80041D008 /* Driver+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Driver+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727C82DE8D7E80041D008 /* Quiz+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Quiz+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727C92DE8D7E80041D008 /* Quiz+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Quiz+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727CA2DE8D7E80041D008 /* QuizAnswer+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizAnswer+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727CB2DE8D7E80041D008 /* QuizAnswer+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizAnswer+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727CC2DE8D7E80041D008 /* QuizQuestion+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizQuestion+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727CD2DE8D7E80041D008 /* QuizQuestion+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizQuestion+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727CE2DE8D7E80041D008 /* QuizResult+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizResult+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727CF2DE8D7E80041D008 /* QuizResult+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuizResult+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		276727D02DE8D7E80041D008 /* Team+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Team+CoreDataClass.swift"; sourceTree = "<group>"; };
+		276727D12DE8D7E80041D008 /* Team+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Team+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		27D5259F2DE4FA7300B73677 /* FormulaOne.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FormulaOne.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		27D525B12DE4FA7400B73677 /* FormulaOneTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FormulaOneTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		27D525BB2DE4FA7400B73677 /* FormulaOneUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FormulaOneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +106,20 @@
 		27D525962DE4FA7300B73677 = {
 			isa = PBXGroup;
 			children = (
+				276727C42DE8D7E80041D008 /* Car+CoreDataClass.swift */,
+				276727C52DE8D7E80041D008 /* Car+CoreDataProperties.swift */,
+				276727C62DE8D7E80041D008 /* Driver+CoreDataClass.swift */,
+				276727C72DE8D7E80041D008 /* Driver+CoreDataProperties.swift */,
+				276727C82DE8D7E80041D008 /* Quiz+CoreDataClass.swift */,
+				276727C92DE8D7E80041D008 /* Quiz+CoreDataProperties.swift */,
+				276727CA2DE8D7E80041D008 /* QuizAnswer+CoreDataClass.swift */,
+				276727CB2DE8D7E80041D008 /* QuizAnswer+CoreDataProperties.swift */,
+				276727CC2DE8D7E80041D008 /* QuizQuestion+CoreDataClass.swift */,
+				276727CD2DE8D7E80041D008 /* QuizQuestion+CoreDataProperties.swift */,
+				276727CE2DE8D7E80041D008 /* QuizResult+CoreDataClass.swift */,
+				276727CF2DE8D7E80041D008 /* QuizResult+CoreDataProperties.swift */,
+				276727D02DE8D7E80041D008 /* Team+CoreDataClass.swift */,
+				276727D12DE8D7E80041D008 /* Team+CoreDataProperties.swift */,
 				27D525A12DE4FA7300B73677 /* FormulaOne */,
 				27D525B42DE4FA7400B73677 /* FormulaOneTests */,
 				27D525BE2DE4FA7400B73677 /* FormulaOneUITests */,
@@ -236,6 +281,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276727D22DE8D7E80041D008 /* QuizAnswer+CoreDataProperties.swift in Sources */,
+				276727D32DE8D7E80041D008 /* QuizQuestion+CoreDataProperties.swift in Sources */,
+				276727D42DE8D7E80041D008 /* Quiz+CoreDataClass.swift in Sources */,
+				276727D52DE8D7E80041D008 /* Team+CoreDataProperties.swift in Sources */,
+				276727D62DE8D7E80041D008 /* Quiz+CoreDataProperties.swift in Sources */,
+				276727D72DE8D7E80041D008 /* QuizQuestion+CoreDataClass.swift in Sources */,
+				276727D82DE8D7E80041D008 /* Car+CoreDataClass.swift in Sources */,
+				276727D92DE8D7E80041D008 /* QuizResult+CoreDataProperties.swift in Sources */,
+				276727DA2DE8D7E80041D008 /* QuizResult+CoreDataClass.swift in Sources */,
+				276727DB2DE8D7E80041D008 /* Car+CoreDataProperties.swift in Sources */,
+				276727DC2DE8D7E80041D008 /* QuizAnswer+CoreDataClass.swift in Sources */,
+				276727DD2DE8D7E80041D008 /* Driver+CoreDataProperties.swift in Sources */,
+				276727DE2DE8D7E80041D008 /* Driver+CoreDataClass.swift in Sources */,
+				276727DF2DE8D7E80041D008 /* Team+CoreDataClass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
