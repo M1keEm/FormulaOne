@@ -32,7 +32,7 @@ class QuizViewModel: ObservableObject {
         try? context.save()
     }
 
-    private func calculateScore() -> Int {
+    func calculateScore() -> Int {
         questions.filter { q in
             selectedAnswers[q.id!] == q.correctAnswerId
         }.count
