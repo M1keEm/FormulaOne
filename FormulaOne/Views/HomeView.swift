@@ -20,7 +20,7 @@ struct HomeView: View {
             FavouritesView()
                 .tabItem { Label("Favourites", systemImage: "star.fill") }
             QuizResultsView()
-                .tabItem { Label("Results", systemImage: "checkmark.seal") }
+                .tabItem { Label("Quiz", systemImage: "questionmark.circle.fill") }
         }
     }
 }
