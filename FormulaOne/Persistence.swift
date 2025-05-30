@@ -79,7 +79,7 @@ extension PersistenceController {
         Ferrari has won 16 Constructors' Championships and 15 Drivers' Championships.
         The team is known for its passionate tifosi (fans) and iconic red cars.
         """
-        ferrari.logoURL = "https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Scuderia_Ferrari_Logo.svg/1200px-Scuderia_Ferrari_Logo.svg.png"
+        ferrari.logoURL = "https://www.formula1.com/content/dam/fom-website/teams/2023/ferrari.png"
         ferrari.isFavourite = false
         
         // Ferrari car
@@ -138,7 +138,7 @@ extension PersistenceController {
         winning four consecutive Constructors' and Drivers' Championships.
         Known for their aggressive aerodynamics and innovative designs.
         """
-        redbull.logoURL = "https://upload.wikimedia.org/wikipedia/en/thumb/7/7d/Red_Bull_Racing_logo.svg/1200px-Red_Bull_Racing_logo.svg.png"
+        redbull.logoURL = "https://www.formula1.com/content/dam/fom-website/teams/2023/red-bull-racing.png"
         redbull.isFavourite = false
         
         // Red Bull car
