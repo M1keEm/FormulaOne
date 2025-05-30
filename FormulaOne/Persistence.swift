@@ -9,158 +9,252 @@ import CoreData
 
 struct PersistenceController {
     static let shared = PersistenceController()
-
-    // Podgląd z testowymi danymi
-    @MainActor
-    static let preview: PersistenceController = {
-        let result = PersistenceController(inMemory: true)
-        let viewContext = result.container.viewContext
-        addSampleData(to: viewContext)
-        return result
-    }()
-
+    
     let container: NSPersistentContainer
-
+    
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "FormulaOne")
+        
         if inMemory {
             container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
         }
-        container.loadPersistentStores { storeDescription, error in
+        
+        let shouldCreateTeams = !inMemory
+        
+        container.loadPersistentStores { _, error in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
             }
-        }
-        container.viewContext.automaticallyMergesChangesFromParent = true
-
-        // Dodaj dane testowe tylko przy normalnym uruchomieniu (np. pierwszy raz)
-        if !inMemory && container.viewContext.hasChanges == false {
-            PersistenceController.addSampleData(to: container.viewContext)
-        }
-    }
-
-    // MARK: - Przykładowe dane
-    static func addSampleData(to context: NSManagedObjectContext) {
-        for i in 1...2 {
-            let team = Team(context: context)
-            team.id = UUID()
-            team.name = "Team \(i)"
-            team.country = "Country \(i)"
-            team.championships = Int32(i)
-            team.foundationYear = 1950 + Int32(i)
-            team.isFavourite = false
-            team.history = "Historia Team \(i)"
-
-            let driver = Driver(context: context)
-            driver.id = UUID()
-            driver.name = "Driver \(i)"
-            driver.surname = "Surname \(i)"
-            driver.nationality = "Nationality \(i)"
-            driver.birthDate = Calendar.current.date(byAdding: .year, value: -25 - i, to: Date())
-            driver.podiums = Int32(i * 3)
-            driver.wins = Int32(i * 2)
-            driver.championships = Int32(i)
-            driver.debutYear = 2000 + Int32(i)
-            driver.biography = "Biografia Driver \(i)"
-            driver.isFavourite = false
-
-            let car = Car(context: context)
-            car.id = UUID()
-            car.model = "Model \(i)"
-            car.engine = "V8 Turbo"
-            car.horsepower = 950 + Int32(i * 10)
-            car.topSpeed = 340 + Int32(i * 5)
-            car.productionYears = "201\(i)-201\(i+1)"
-            car.isFavourite = false
-
-            // Relacje
-            driver.addToCar(car)
-            team.addToDrivers(driver)
-            car.team = team
-
-            // Quiz
-            let quiz = Quiz(context: context)
-            quiz.id = UUID()
-            quiz.team = team
-
-            let question = QuizQuestion(context: context)
-            question.id = UUID()
-            question.text = "W którym roku powstał \(team.name ?? "ten zespół")?"
-            question.quiz = quiz
-
-            let answer1 = QuizAnswer(context: context)
-            answer1.id = UUID()
-            answer1.text = "\(team.foundationYear)"
-            answer1.quizquestion = question
-
-            let answer2 = QuizAnswer(context: context)
-            answer2.id = UUID()
-            answer2.text = "2000"
-            answer2.quizquestion = question
-
-            question.correctAnswerId = answer1.id
-            question.answers = NSSet(array: [answer1, answer2])
-            quiz.questions = NSSet(array: [question])
-            team.quiz = quiz
-        }
-
-        do {
-            try context.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("❌ Nie udało się zapisać przykładowych danych: \(nsError), \(nsError.userInfo)")
+            
+            if shouldCreateTeams {
+                DispatchQueue.main.async {
+                    PersistenceController.shared.createRealTeamsIfNeeded()
+                }
+            }
         }
     }
+    
+    static var preview: PersistenceController = {
+        let result = PersistenceController(inMemory: true)
+        let viewContext = result.container.viewContext
+        return result
+    }()
 }
+
 extension PersistenceController {
-    func createSampleQuiz(for team: Team) {
+    func createRealTeamsIfNeeded() {
         let context = container.viewContext
         
+        let request: NSFetchRequest<Team> = Team.fetchRequest()
+        request.predicate = NSPredicate(format: "name IN %@", ["Ferrari", "Red Bull Racing"])
+        
+        do {
+            let existingTeams = try context.fetch(request)
+            let existingNames = existingTeams.compactMap { $0.name }
+            
+            if !existingNames.contains("Ferrari") {
+                createFerrari(in: context)
+            }
+            
+            if !existingNames.contains("Red Bull Racing") {
+                createRedBull(in: context)
+            }
+            
+            try context.save()
+        } catch {
+            print("Failed to create real teams: \(error)")
+        }
+    }
+    
+    private func createFerrari(in context: NSManagedObjectContext) {
+        let ferrari = Team(context: context)
+        ferrari.id = UUID()
+        ferrari.name = "Ferrari"
+        ferrari.country = "Italy"
+        ferrari.foundationYear = 1929
+        ferrari.championships = 16
+        ferrari.history = """
+        Scuderia Ferrari is the oldest and most successful team in Formula 1 history.
+        Founded by Enzo Ferrari in 1929, the team made its F1 debut in 1950.
+        Ferrari has won 16 Constructors' Championships and 15 Drivers' Championships.
+        The team is known for its passionate tifosi (fans) and iconic red cars.
+        """
+        ferrari.logoURL = "https://upload.wikimedia.org/wikipedia/en/thumb/d/d1/Scuderia_Ferrari_Logo.svg/1200px-Scuderia_Ferrari_Logo.svg.png"
+        ferrari.isFavourite = false
+        
+        // Ferrari car
+        let car = Car(context: context)
+        car.id = UUID()
+        car.model = "SF-23"
+        car.engine = "Ferrari 066/10 V6 turbo hybrid"
+        car.horsepower = 950
+        car.topSpeed = 340
+        car.productionYears = "2023"
+        car.team = ferrari
+        car.isFavourite = false
+        
+        // Ferrari drivers
+        let leclerc = Driver(context: context)
+        leclerc.id = UUID()
+        leclerc.name = "Charles"
+        leclerc.surname = "Leclerc"
+        leclerc.nationality = "Monaco"
+        leclerc.birthDate = Date(timeIntervalSince1970: 846374400) // 16 Oct 1997
+        leclerc.championships = 0
+        leclerc.wins = 5
+        leclerc.podiums = 27
+        leclerc.debutYear = 2018
+        leclerc.biography = "Monegasque racing driver who joined Ferrari in 2019."
+        leclerc.isFavourite = false
+        leclerc.addToTeam(ferrari)
+        
+        let sainz = Driver(context: context)
+        sainz.id = UUID()
+        sainz.name = "Carlos"
+        sainz.surname = "Sainz Jr."
+        sainz.nationality = "Spain"
+        sainz.birthDate = Date(timeIntervalSince1970: 715132800) // 1 Sep 1994
+        sainz.championships = 0
+        sainz.wins = 1
+        sainz.podiums = 15
+        sainz.debutYear = 2015
+        sainz.biography = "Spanish driver known as the 'Smooth Operator'."
+        sainz.isFavourite = false
+        sainz.addToTeam(ferrari)
+        
+        createFerrariQuiz(for: ferrari, in: context)
+    }
+    
+    private func createRedBull(in context: NSManagedObjectContext) {
+        let redbull = Team(context: context)
+        redbull.id = UUID()
+        redbull.name = "Red Bull Racing"
+        redbull.country = "Austria"
+        redbull.foundationYear = 2005
+        redbull.championships = 5
+        redbull.history = """
+        Red Bull Racing entered Formula 1 in 2005 after buying Jaguar Racing.
+        The team dominated the 2010-2013 seasons with Sebastian Vettel,
+        winning four consecutive Constructors' and Drivers' Championships.
+        Known for their aggressive aerodynamics and innovative designs.
+        """
+        redbull.logoURL = "https://upload.wikimedia.org/wikipedia/en/thumb/7/7d/Red_Bull_Racing_logo.svg/1200px-Red_Bull_Racing_logo.svg.png"
+        redbull.isFavourite = false
+        
+        // Red Bull car
+        let car = Car(context: context)
+        car.id = UUID()
+        car.model = "RB19"
+        car.engine = "Honda RBPTH001 V6 turbo hybrid"
+        car.horsepower = 960
+        car.topSpeed = 345
+        car.productionYears = "2023"
+        car.team = redbull
+        car.isFavourite = false
+        
+        // Red Bull drivers
+        let verstappen = Driver(context: context)
+        verstappen.id = UUID()
+        verstappen.name = "Max"
+        verstappen.surname = "Verstappen"
+        verstappen.nationality = "Netherlands"
+        verstappen.birthDate = Date(timeIntervalSince1970: 887587200) // 30 Sep 1997
+        verstappen.championships = 2
+        verstappen.wins = 39
+        verstappen.podiums = 92
+        verstappen.debutYear = 2015
+        verstappen.biography = "Youngest F1 driver in history and two-time World Champion."
+        verstappen.isFavourite = false
+        verstappen.addToTeam(redbull)
+        
+        let perez = Driver(context: context)
+        perez.id = UUID()
+        perez.name = "Sergio"
+        perez.surname = "Pérez"
+        perez.nationality = "Mexico"
+        perez.birthDate = Date(timeIntervalSince1970: 615859200) // 26 Jan 1990
+        perez.championships = 0
+        perez.wins = 6
+        perez.podiums = 35
+        perez.debutYear = 2011
+        perez.biography = "Mexican driver known for his tyre management skills."
+        perez.isFavourite = false
+        perez.addToTeam(redbull)
+        
+        createRedBullQuiz(for: redbull, in: context)
+    }
+    
+    private func createFerrariQuiz(for team: Team, in context: NSManagedObjectContext) {
         let quiz = Quiz(context: context)
         quiz.id = UUID()
         quiz.team = team
         
-        // Question 1
-        let question1 = QuizQuestion(context: context)
-        question1.id = UUID()
-        question1.text = "In what year did \(team.name ?? "the team") win its first championship?"
-        question1.quiz = quiz
-        question1.correctAnswerId = UUID()
+        createQuestion(
+            text: "In which year did Ferrari make its Formula 1 debut?",
+            correctAnswer: "1950",
+            wrongAnswers: ["1948", "1952", "1960"],
+            quiz: quiz,
+            context: context
+        )
         
-        // Answers for question 1
-        createAnswer(text: "2005", isCorrect: false, question: question1, correctId: question1.correctAnswerId!)
-        createAnswer(text: "2010", isCorrect: false, question: question1, correctId: question1.correctAnswerId!)
-        createAnswer(text: "2012", isCorrect: true, question: question1, correctId: question1.correctAnswerId!)
+        createQuestion(
+            text: "Which Ferrari driver has the most championship titles?",
+            correctAnswer: "Michael Schumacher",
+            wrongAnswers: ["Niki Lauda", "Alberto Ascari", "Kimi Räikkönen"],
+            quiz: quiz,
+            context: context
+        )
         
-        // Question 2
-        let question2 = QuizQuestion(context: context)
-        question2.id = UUID()
-        question2.text = "Who was the main driver for \(team.name ?? "the team") in 2020 season?"
-        question2.quiz = quiz
-        question2.correctAnswerId = UUID()
+        createQuestion(
+            text: "How many Constructors' Championships has Ferrari won?",
+            correctAnswer: "16",
+            wrongAnswers: ["12", "18", "20"],
+            quiz: quiz,
+            context: context
+        )
+    }
+    
+    private func createRedBullQuiz(for team: Team, in context: NSManagedObjectContext) {
+        let quiz = Quiz(context: context)
+        quiz.id = UUID()
+        quiz.team = team
         
-        // Answers for question 2
-        createAnswer(text: "John Smith", isCorrect: true, question: question2, correctId: question2.correctAnswerId!)
-        createAnswer(text: "Michael Johnson", isCorrect: false, question: question2, correctId: question2.correctAnswerId!)
-        createAnswer(text: "Robert Williams", isCorrect: false, question: question2, correctId: question2.correctAnswerId!)
+        createQuestion(
+            text: "In which year did Red Bull win its first championship?",
+            correctAnswer: "2010",
+            wrongAnswers: ["2009", "2011", "2012"],
+            quiz: quiz,
+            context: context
+        )
         
-        // Question 3
-        let question3 = QuizQuestion(context: context)
-        question3.id = UUID()
-        question3.text = "How many constructor championships has \(team.name ?? "the team") won?"
-        question3.quiz = quiz
-        question3.correctAnswerId = UUID()
+        createQuestion(
+            text: "Which Red Bull driver won four consecutive titles?",
+            correctAnswer: "Sebastian Vettel",
+            wrongAnswers: ["Max Verstappen", "Daniel Ricciardo", "Mark Webber"],
+            quiz: quiz,
+            context: context
+        )
         
-        // Answers for question 3
-        createAnswer(text: "3", isCorrect: false, question: question3, correctId: question3.correctAnswerId!)
-        createAnswer(text: "5", isCorrect: true, question: question3, correctId: question3.correctAnswerId!)
-        createAnswer(text: "7", isCorrect: false, question: question3, correctId: question3.correctAnswerId!)
+        createQuestion(
+            text: "What was Red Bull's original team before entering F1?",
+            correctAnswer: "Jaguar Racing",
+            wrongAnswers: ["Stewart Grand Prix", "Minardi", "Toro Rosso"],
+            quiz: quiz,
+            context: context
+        )
+    }
+    
+    private func createQuestion(text: String, correctAnswer: String, wrongAnswers: [String], quiz: Quiz, context: NSManagedObjectContext) {
+        let question = QuizQuestion(context: context)
+        question.id = UUID()
+        question.text = text
+        question.quiz = quiz
+        question.correctAnswerId = UUID()
         
-        do {
-            try context.save()
-            print("Quiz created for \(team.name ?? "team")")
-        } catch {
-            print("Failed to save quiz: \(error)")
+        createAnswer(text: correctAnswer, isCorrect: true, question: question, correctId: question.correctAnswerId!)
+        
+        wrongAnswers.forEach { answer in
+            createAnswer(text: answer, isCorrect: false, question: question, correctId: question.correctAnswerId!)
         }
     }
     

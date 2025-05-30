@@ -5,51 +5,66 @@
 //  Created by Michał Banaszek on 29/05/2025.
 //
 
-
 import SwiftUI
 import CoreData
 
 struct TeamListView: View {
-    @StateObject private var viewModel = TeamViewModel()
-    @Environment(\.managedObjectContext) private var context
+    @FetchRequest(
+        sortDescriptors: [NSSortDescriptor(keyPath: \Team.name, ascending: true)],
+        animation: .default
+    ) var teams: FetchedResults<Team>
+    
+    @Environment(\.managedObjectContext) private var viewContext
     
     var body: some View {
         NavigationStack {
-            List(viewModel.teams, id: \.self) { team in
-                NavigationLink(destination: TeamDetailView(team: team)) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(team.name ?? "Unknown Team")
-                                .font(.headline)
-                            Text(team.country ?? "")
-                                .font(.subheadline)
-                        }
-                        Spacer()
-                        if team.isFavourite {
-                            Image(systemName: "star.fill").foregroundColor(.yellow)
+            List {
+                ForEach(teams) { team in
+                    NavigationLink(destination: TeamDetailView(team: team)) {
+                        HStack {
+                            AsyncImage(url: URL(string: team.logoURL ?? "")) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40, height: 40)
+                            } placeholder: {
+                                ProgressView()
+                            }
+                            
+                            VStack(alignment: .leading) {
+                                Text(team.name ?? "Unknown Team")
+                                    .font(.headline)
+                                Text(team.country ?? "")
+                                    .font(.subheadline)
+                            }
+                            
+                            Spacer()
+                            
+                            if team.isFavourite {
+                                Image(systemName: "star.fill")
+                                    .foregroundColor(.yellow)
+                            }
                         }
                     }
                 }
             }
-            .navigationTitle("Teams")
-            .onAppear {
-                viewModel.fetchTeams()
-                checkAndCreateQuiz()
+            .navigationTitle("F1 Teams")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: refreshData) {
+                        Label("Refresh", systemImage: "arrow.clockwise")
+                    }
+                }
             }
         }
     }
     
-    private func checkAndCreateQuiz() {
-        let request: NSFetchRequest<Team> = Team.fetchRequest()
-        request.predicate = NSPredicate(format: "name == %@", "Team 1")
-        
-        do {
-            let teams = try context.fetch(request)
-            if let team1 = teams.first, team1.quiz == nil {
-                PersistenceController.shared.createSampleQuiz(for: team1)
-            }
-        } catch {
-            print("Failed to check for Team 1: \(error)")
-        }
+    private func refreshData() {
+        PersistenceController.shared.createRealTeamsIfNeeded()
+    }
+}
+
+struct TeamListView_Previews: PreviewProvider {
+    static var previews: some View {
+        TeamListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
