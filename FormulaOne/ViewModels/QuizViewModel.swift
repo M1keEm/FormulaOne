@@ -14,11 +14,14 @@ class QuizViewModel: ObservableObject {
     let context = PersistenceController.shared.container.viewContext
 
     func loadQuiz(for team: Team) {
-        if let quizSet = team.value(forKey: "quiz") as? Set<Quiz>,
-           let quiz = quizSet.first,
-           let quizQuestions = quiz.questions as? Set<QuizQuestion> {
-            questions = Array(quizQuestions)
+        guard let quiz = team.quiz,
+              let questionsSet = quiz.questions as? Set<QuizQuestion> else {
+            print("No quiz or questions found for team")
+            return
         }
+        
+        questions = Array(questionsSet)
+        print("Loaded \(questions.count) questions") // Debug
     }
 
     func submitQuiz(for driver: Driver, from quiz: Quiz) {
@@ -29,7 +32,13 @@ class QuizViewModel: ObservableObject {
         result.quiz = quiz
         result.score = Int32(calculateScore())
         result.totalQuestions = Int32(questions.count)
-        try? context.save()
+        
+        do {
+            try context.save()
+            print("Quiz result saved successfully")
+        } catch {
+            print("Failed to save quiz result: \(error)")
+        }
     }
 
     func calculateScore() -> Int {

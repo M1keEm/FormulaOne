@@ -13,66 +13,75 @@ struct QuizView: View {
     var team: Team
     @Environment(\.managedObjectContext) private var context
     @Environment(\.dismiss) private var dismiss
-
+    
     @State private var showResult = false
     @State private var score = 0
-
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text("Quiz o \(team.name ?? "Zespole")")
+                Text("\(team.name ?? "Team") Quiz")
                     .font(.largeTitle).bold()
-
-                ForEach(viewModel.questions, id: \.self) { question in
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(question.text ?? "Brak pytania")
-                            .font(.headline)
-
-                        if let answers = question.answers as? Set<QuizAnswer> {
-                            ForEach(Array(answers).sorted(by: { $0.text ?? "" < $1.text ?? "" }), id: \.self) { answer in
-                                Button(action: {
-                                    viewModel.selectedAnswers[question.id!] = answer.id
-                                }) {
-                                    HStack {
-                                        Image(systemName: viewModel.selectedAnswers[question.id!] == answer.id ? "largecircle.fill.circle" : "circle")
-                                            .foregroundColor(.blue)
-                                        Text(answer.text ?? "")
+                
+                if viewModel.questions.isEmpty {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                    Text("Loading questions...")
+                        .frame(maxWidth: .infinity)
+                } else {
+                    ForEach(viewModel.questions, id: \.id) { question in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(question.text ?? "Question text missing")
+                                .font(.headline)
+                            
+                            if let answers = question.answers?.allObjects as? [QuizAnswer] {
+                                ForEach(answers, id: \.id) { answer in
+                                    Button(action: {
+                                        viewModel.selectedAnswers[question.id!] = answer.id
+                                    }) {
+                                        HStack {
+                                            Image(systemName: viewModel.selectedAnswers[question.id!] == answer.id ?
+                                                  "largecircle.fill.circle" : "circle")
+                                                .foregroundColor(.blue)
+                                            Text(answer.text ?? "Answer missing")
+                                            Spacer()
+                                        }
+                                        .contentShape(Rectangle())
                                     }
+                                    .buttonStyle(.plain)
+                                    .padding(.vertical, 4)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
                     }
+                    
+                    Button("Submit Quiz") {
+                        if let driver = try? context.fetch(Driver.fetchRequest()).first as? Driver {
+                            viewModel.submitQuiz(for: driver, from: team.quiz!)
+                            score = viewModel.calculateScore()
+                            showResult = true
+                        }
+                    }
+                    .disabled(viewModel.selectedAnswers.count != viewModel.questions.count)
                     .padding()
-                    .background(Color.gray.opacity(0.1))
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
                     .cornerRadius(10)
                 }
-
-                Button("Zakończ quiz") {
-                    if let driver = try? context.fetch(Driver.fetchRequest()).first as? Driver,
-                       let quiz = team.quiz {
-                        viewModel.submitQuiz(for: driver, from: quiz)
-                        score = viewModel.calculateScore()
-                        showResult = true
-                    }
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
             }
             .padding()
         }
         .onAppear {
             viewModel.loadQuiz(for: team)
         }
-        .alert("Wynik quizu", isPresented: $showResult) {
-            Button("OK", role: .cancel) {
-                dismiss()
-            }
+        .alert("Quiz Results", isPresented: $showResult) {
+            Button("OK") { dismiss() }
         } message: {
-            Text("Zdobyto \(score) z \(viewModel.questions.count) punktów.")
+            Text("You scored \(score) out of \(viewModel.questions.count)")
         }
     }
 }
