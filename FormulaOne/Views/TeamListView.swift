@@ -14,21 +14,17 @@ struct TeamListView: View {
         animation: .default
     ) var teams: FetchedResults<Team>
     
-    @Environment(\.managedObjectContext) private var viewContext
-    
     var body: some View {
         NavigationStack {
             List {
                 ForEach(teams) { team in
                     NavigationLink(destination: TeamDetailView(team: team)) {
                         HStack {
-                            AsyncImage(url: URL(string: team.logoURL ?? "")) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 40, height: 40)
-                            } placeholder: {
-                                ProgressView()
-                            }
+                            AsyncImageLoader(
+                                url: URL(string: team.logoURL ?? ""),
+                                placeholder: Image(systemName: "photo")
+                            )
+                            .frame(width: 40, height: 40)
                             
                             VStack(alignment: .leading) {
                                 Text(team.name ?? "Unknown Team")
@@ -48,23 +44,13 @@ struct TeamListView: View {
                 }
             }
             .navigationTitle("F1 Teams")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: refreshData) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
-                    }
-                }
-            }
         }
-    }
-    
-    private func refreshData() {
-        PersistenceController.shared.createRealTeamsIfNeeded()
     }
 }
 
 struct TeamListView_Previews: PreviewProvider {
     static var previews: some View {
-        TeamListView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        TeamListView()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

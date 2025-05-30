@@ -16,13 +16,11 @@ struct TeamDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                AsyncImage(url: URL(string: team.logoURL ?? "")) { image in
-                    image.resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 100)
-                } placeholder: {
-                    ProgressView()
-                }
+                AsyncImageLoader(
+                    url: URL(string: team.logoURL ?? ""),
+                    placeholder: Image(systemName: "photo")
+                )
+                .frame(height: 100)
                 .frame(maxWidth: .infinity)
                 
                 Text(team.name ?? "")
