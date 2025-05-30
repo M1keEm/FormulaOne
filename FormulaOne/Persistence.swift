@@ -112,3 +112,62 @@ struct PersistenceController {
         }
     }
 }
+extension PersistenceController {
+    func createSampleQuiz(for team: Team) {
+        let context = container.viewContext
+        
+        let quiz = Quiz(context: context)
+        quiz.id = UUID()
+        quiz.team = team
+        
+        // Question 1
+        let question1 = QuizQuestion(context: context)
+        question1.id = UUID()
+        question1.text = "In what year did \(team.name ?? "the team") win its first championship?"
+        question1.quiz = quiz
+        question1.correctAnswerId = UUID()
+        
+        // Answers for question 1
+        createAnswer(text: "2005", isCorrect: false, question: question1, correctId: question1.correctAnswerId!)
+        createAnswer(text: "2010", isCorrect: false, question: question1, correctId: question1.correctAnswerId!)
+        createAnswer(text: "2012", isCorrect: true, question: question1, correctId: question1.correctAnswerId!)
+        
+        // Question 2
+        let question2 = QuizQuestion(context: context)
+        question2.id = UUID()
+        question2.text = "Who was the main driver for \(team.name ?? "the team") in 2020 season?"
+        question2.quiz = quiz
+        question2.correctAnswerId = UUID()
+        
+        // Answers for question 2
+        createAnswer(text: "John Smith", isCorrect: true, question: question2, correctId: question2.correctAnswerId!)
+        createAnswer(text: "Michael Johnson", isCorrect: false, question: question2, correctId: question2.correctAnswerId!)
+        createAnswer(text: "Robert Williams", isCorrect: false, question: question2, correctId: question2.correctAnswerId!)
+        
+        // Question 3
+        let question3 = QuizQuestion(context: context)
+        question3.id = UUID()
+        question3.text = "How many constructor championships has \(team.name ?? "the team") won?"
+        question3.quiz = quiz
+        question3.correctAnswerId = UUID()
+        
+        // Answers for question 3
+        createAnswer(text: "3", isCorrect: false, question: question3, correctId: question3.correctAnswerId!)
+        createAnswer(text: "5", isCorrect: true, question: question3, correctId: question3.correctAnswerId!)
+        createAnswer(text: "7", isCorrect: false, question: question3, correctId: question3.correctAnswerId!)
+        
+        do {
+            try context.save()
+            print("Quiz created for \(team.name ?? "team")")
+        } catch {
+            print("Failed to save quiz: \(error)")
+        }
+    }
+    
+    private func createAnswer(text: String, isCorrect: Bool, question: QuizQuestion, correctId: UUID) {
+        let answer = QuizAnswer(context: container.viewContext)
+        answer.id = isCorrect ? correctId : UUID()
+        answer.text = text
+        answer.quizquestion = question
+    }
+}

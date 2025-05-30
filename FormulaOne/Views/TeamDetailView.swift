@@ -5,12 +5,12 @@
 //  Created by Michał Banaszek on 29/05/2025.
 //
 
-
 import SwiftUI
 
 struct TeamDetailView: View {
     @ObservedObject var team: Team
     @Environment(\.managedObjectContext) private var context
+    @State private var showQuiz = false
 
     var body: some View {
         ScrollView {
@@ -28,8 +28,13 @@ struct TeamDetailView: View {
                     try? context.save()
                 }) {
                     HStack {
-                        Image(systemName: team.isFavourite ? "star.fill" : "star")
-                        Text(team.isFavourite ? "Remove from Favourites" : "Add to Favourites")
+                        Image(
+                            systemName: team.isFavourite ? "star.fill" : "star"
+                        )
+                        Text(
+                            team.isFavourite
+                                ? "Remove from Favourites" : "Add to Favourites"
+                        )
                     }
                 }
                 .padding()
@@ -37,8 +42,8 @@ struct TeamDetailView: View {
                 .cornerRadius(8)
 
                 if team.quiz != nil {
-                    NavigationLink(destination: QuizView(viewModel: QuizViewModel(), team: team)) {
-                        Text("Rozwiąż quiz")
+                    Button(action: { showQuiz = true }) {
+                        Text("Take Team Quiz")
                             .bold()
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -46,12 +51,15 @@ struct TeamDetailView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                    .sheet(isPresented: $showQuiz) {
+                        QuizView(viewModel: QuizViewModel(), team: team)
+                    }
                 }
 
                 Spacer()
             }
             .padding()
-            .navigationTitle(team.name ?? "")
         }
+        .navigationTitle(team.name ?? "")
     }
 }
