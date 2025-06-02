@@ -51,23 +51,40 @@ struct QuizResultsView: View {
                     .listStyle(.plain)
                 } else {
                     List(sortedResults, id: \.self) { result in
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text("Date: \(result.dateTaken?.formatted(date: .long, time: .shortened) ?? "-")")
-                                if result.isPinned {
-                                    Image(systemName: "pin.fill")
-                                        .foregroundColor(.orange)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                HStack {
+                                    Text("Date: \(result.dateTaken?.formatted(date: .long, time: .shortened) ?? "-")")
+                                    if result.isPinned {
+                                        Image(systemName: "pin.fill")
+                                            .foregroundColor(.orange)
+                                    }
+                                }
+                                Text(
+                                    "Score: \(result.score)/\(result.totalQuestions)"
+                                )
+                                .font(.subheadline)
+                                if let team = result.quiz?.team {
+                                    Text("Team: \(team.name ?? "")")
+                                        .font(.subheadline)
                                 }
                             }
-                            Text(
-                                "Score: \(result.score)/\(result.totalQuestions)"
-                            )
-                            .font(.subheadline)
-                            if let team = result.quiz?.team {
-                                Text("Team: \(team.name ?? "")")
-                                    .font(.subheadline)
+
+                            Spacer()
+
+                            ZStack {
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 6)
+                                    .frame(width: 30, height: 30)
+
+                                Circle()
+                                    .trim(from: 0.0, to: CGFloat(result.totalQuestions == 0 ? 0 : Double(result.score) / Double(result.totalQuestions)))
+                                    .stroke(Color.green, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                                    .rotationEffect(.degrees(-90))
+                                    .frame(width: 30, height: 30)
                             }
                         }
+                        .contentShape(Rectangle())
                         .simultaneousGesture(
                             TapGesture(count: 2)
                                 .onEnded {
