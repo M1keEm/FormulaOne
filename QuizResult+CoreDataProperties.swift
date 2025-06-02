@@ -2,7 +2,7 @@
 //  QuizResult+CoreDataProperties.swift
 //  FormulaOne
 //
-//  Created by Michał Banaszek on 29/05/2025.
+//  Created by Michał Banaszek on 02/06/2025.
 //
 //
 
@@ -20,6 +20,7 @@ extension QuizResult {
     @NSManaged public var id: UUID?
     @NSManaged public var score: Int32
     @NSManaged public var totalQuestions: Int32
+    @NSManaged public var isPinned: Bool
     @NSManaged public var driver: Driver?
     @NSManaged public var quiz: Quiz?
 
