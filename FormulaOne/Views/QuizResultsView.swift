@@ -13,6 +13,8 @@ struct QuizResultsView: View {
     @FetchRequest(entity: Team.entity(), sortDescriptors: []) var teams: FetchedResults<Team>
     
     @State private var selectedTab = 1
+    @State private var showAnswersSheet = false
+    @State private var selectedResult: QuizResult?
     
     var body: some View {
         NavigationStack {
@@ -49,8 +51,40 @@ struct QuizResultsView: View {
                                     .font(.subheadline)
                             }
                         }
+                        .onLongPressGesture {
+                            selectedResult = result
+                            showAnswersSheet = true
+                        }
                     }
                     .listStyle(.plain)
+                    .sheet(isPresented: $showAnswersSheet) {
+                        if let questions = selectedResult?.quiz?.questions?.allObjects as? [QuizQuestion] {
+                            ScrollView {
+                                VStack(alignment: .leading, spacing: 12) {
+                                    ForEach(questions, id: \.self) { question in
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text("Q: \(question.text ?? "")")
+                                                .fontWeight(.bold)
+                                            if let answers = question.answers?.allObjects as? [QuizAnswer],
+                                               let correctID = question.correctAnswerId {
+                                                if let correctAnswer = answers.first(where: { $0.id == correctID }) {
+                                                    Text("✔ Correct: \(correctAnswer.text ?? "")")
+                                                        .foregroundColor(.green)
+                                                }
+                                            }
+                                        }
+                                        .padding()
+                                        .background(Color.gray.opacity(0.1))
+                                        .cornerRadius(8)
+                                    }
+                                }
+                                .padding()
+                            }
+                        } else {
+                            Text("No questions available.")
+                                .padding()
+                        }
+                    }
                 }
             }
             .navigationTitle("Quiz")
